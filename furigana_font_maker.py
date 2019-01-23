@@ -12,7 +12,7 @@ if __name__ == '__main__':
     font.selection.select("A")
     font.copy()
 
-    font.selection.select("B")
+    font.selection.select(('more', 'unicode'), 0xE000)
     font.paste()
 
     font.generate(dst)
