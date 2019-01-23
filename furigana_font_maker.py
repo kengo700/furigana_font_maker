@@ -8,5 +8,12 @@ if __name__ == '__main__':
     src = sys.argv[1]
     dst = sys.argv[2]
     font = fontforge.open(src)
+
+    font.selection.select("A")
+    font.copy()
+
+    font.selection.select("B")
+    font.paste()
+
     font.generate(dst)
     font.close()
