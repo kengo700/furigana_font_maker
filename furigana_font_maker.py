@@ -15,5 +15,7 @@ if __name__ == '__main__':
     font.selection.select(('more', 'unicode'), 0xE000)
     font.paste()
 
+    font[0xE000].addReference("B")
+
     font.generate(dst)
     font.close()
