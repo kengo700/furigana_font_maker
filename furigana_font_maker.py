@@ -20,5 +20,7 @@ if __name__ == '__main__':
     matrix = psMat.compose(psMat.scale(0.5), psMat.translate(0, ascent))
     font[0xE000].addReference("B", matrix)
 
+    font.ascent = ascent + ascent * 0.5
+
     font.generate(dst)
     font.close()
