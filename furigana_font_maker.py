@@ -6,9 +6,21 @@ import fontforge
 import psMat
 
 if __name__ == '__main__':
+
     src = sys.argv[1]
     dst = sys.argv[2]
     font = fontforge.open(src)
+
+    oyamoji_all = "ABC"
+    oyamoji_list = list(oyamoji_all)
+
+    oyamoji_width = 0
+    for oyamoji in oyamoji_list:
+        oyamoji_width += font[oyamoji].width
+        print font[oyamoji].width
+
+    print oyamoji_width
+    print oyamoji_width / 2
 
     font.selection.select("A")
     font.copy()
