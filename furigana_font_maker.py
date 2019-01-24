@@ -6,13 +6,24 @@ import fontforge
 import psMat
 
 if __name__ == '__main__':
+    
+    src_text = sys.argv[1]
+    src_font = sys.argv[2]
+    dst_font = sys.argv[3]
 
-    src = sys.argv[1]
-    dst = sys.argv[2]
-    font = fontforge.open(src)
+    font = fontforge.open(src_font)
+    text = open(src_text)
 
     furigana_scale = 0.5
     ascent_scale = 1.6
+
+    oyamoji_all = text.readline().rstrip()
+    furigana_all = text.readline().rstrip()
+
+    print oyamoji_all
+    print furigana_all
+
+    furigana_unicode = 0xE000
 
     print font.fontname
     print font.fullname
@@ -22,7 +33,6 @@ if __name__ == '__main__':
     font.familyname = font.familyname + " Furigana"
 
     # 親文字全体の幅を計算（カーニングなどはないものとする）
-    oyamoji_all = "ABC"
     oyamoji_list = list(oyamoji_all)
 
     oyamoji_width = 0
@@ -30,7 +40,6 @@ if __name__ == '__main__':
         oyamoji_width += font[oyamoji].width
 
    # ルビ全体の幅を計算（カーニングなどはないものとする）
-    furigana_all = "DEFG"
     furigana_list = list(furigana_all)
 
     furigana_width = 0
@@ -51,25 +60,27 @@ if __name__ == '__main__':
     font.selection.select(furigana_list[0])
     font.copy()
 
-    font.selection.select(('more', 'unicode'), 0xE000)
+    font.selection.select(('more', 'unicode'), furigana_unicode)
     font.paste()
 
     matrix = psMat.compose(psMat.scale(furigana_scale), psMat.translate(list_furigana_x[0], furigana_y))
-    font[0xE000].transform(matrix)
+    font[furigana_unicode].transform(matrix)
 
     # ルビの二文字目移行の文字の位置とサイズを設定し、参照を追加
     for index, furigana in enumerate(furigana_list):
         if index == 0:
             continue
         matrix = psMat.compose(psMat.scale(furigana_scale), psMat.translate(list_furigana_x[index], furigana_y))
-        font[0xE000].addReference(furigana, matrix)
+        font[furigana_unicode].addReference(furigana, matrix)
 
     # ルビ文字の幅をゼロに（親文字の後ろにつけるので）
-    font[0xE000].width = 0;
+    font[furigana_unicode].width = 0;
 
     # フォントの高さを修正（ルビ文字が入るように）
     font.ascent = font.ascent * ascent_scale
 
     # フォント出力
-    font.generate(dst)
+    font.generate(dst_font)
+
     font.close()
+    text.close()
