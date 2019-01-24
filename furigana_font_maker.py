@@ -17,8 +17,14 @@ if __name__ == '__main__':
     font.paste()
 
     ascent = font.ascent
+
     matrix = psMat.compose(psMat.scale(0.5), psMat.translate(0, ascent))
+    font[0xE000].transform(matrix)
+
+    matrix = psMat.compose(psMat.scale(0.5), psMat.translate(1000, ascent))
     font[0xE000].addReference("B", matrix)
+
+    font[0xE000].width = 0;
 
     font.ascent = ascent + ascent * 0.5
 
