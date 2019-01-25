@@ -58,6 +58,9 @@ def main():
     symbol_oyamoji_right  = u"《"
     symbol_furigana_left  = u"《"
     symbol_furigana_right = u"》"
+
+    # テキスト中に出てきたルビ指定を保存する辞書（同じルビ指定が出たときに使い回せるように）
+    dictionary_furigana = {}
     
     # 正規表現の準備
     re_pattern_oyamoji_furigana = symbol_oyamoji_left  + u".*?" + symbol_furigana_right
@@ -81,7 +84,7 @@ def main():
             re_result_oyamoji_furigana = re.search(re_pattern_object_oyamoji_furigana,src_text_line)
     
             if re_result_oyamoji_furigana == None:
-                # ルビの指定がなくなったら、この行に対する処理は終了
+                # ルビ指定の検索結果がなくなったら、この行に対する処理は終了
                 break
 
             text_oyamoji_furigana = re_result_oyamoji_furigana.group()
@@ -97,50 +100,61 @@ def main():
                 #   本来は何らかのエラーメッセージを出すべきなので、要修正
                 break
 
-            font.fontname = font.fontname + "_furigana"
-            font.fullname = font.fullname + " Furigana"
-            font.familyname = font.familyname + " Furigana"
+            # このルビ指定が既出であれば、それを差し込む
+            if text_oyamoji_furigana in dictionary_furigana:
 
-            # 親文字全体の幅を計算（カーニングなどはないものとする）
-            oyamoji_width = calc_text_width(text_oyamoji, font)
+                # ルビの指定部分を置換し、出力用の文字列を作成する（一カ所ずつ処理するので、replaceの回数を1に）
+                temp_furigana_codepoint = dictionary_furigana[text_oyamoji_furigana]
+                src_text_line = src_text_line.replace(text_oyamoji_furigana, text_oyamoji + unichr(temp_furigana_codepoint), 1)
 
-            # ルビ全体の幅を計算（カーニングなどはないものとする）
-            furigana_width = calc_text_width(text_furigana, font) * furigana_scale
+            # このルビ指定が初めて出てきたものであれば、新たにルビ文字を作成する
+            else:
+                dictionary_furigana[text_oyamoji_furigana] = new_furigana_codepoint
 
-            # ルビの各文字の位置を計算
-            list_furigana_x = calc_furigana_x(text_furigana, oyamoji_width, furigana_width, furigana_scale, font)
+                font.fontname = font.fontname + "_furigana"
+                font.fullname = font.fullname + " Furigana"
+                font.familyname = font.familyname + " Furigana"
 
-            # ルビの高さを計算（今は親文字のすぐ上に）
-            furigana_y = font.ascent
+                # 親文字全体の幅を計算（カーニングなどはないものとする）
+                oyamoji_width = calc_text_width(text_oyamoji, font)
 
-            # ルビの新たな文字を合成し、私用領域に割り当てる
-            for index, furigana in enumerate(list(text_furigana)):
-                if index == 0:
-                    # ルビの一文字目だけは、コピペして位置とサイズを変更（全ての文字が参照だと、上手くいかないっぽいので）
-                    furigana_codepoint = ord(furigana)
-                    font.selection.select(furigana_codepoint)
-                    font.copy()
+                # ルビ全体の幅を計算（カーニングなどはないものとする）
+                furigana_width = calc_text_width(text_furigana, font) * furigana_scale
 
-                    font.selection.select(('more', 'unicode'), new_furigana_codepoint)
-                    font.paste()
+                # ルビの各文字の位置を計算
+                list_furigana_x = calc_furigana_x(text_furigana, oyamoji_width, furigana_width, furigana_scale, font)
 
-                    matrix = psMat.compose(psMat.scale(furigana_scale), psMat.translate(list_furigana_x[0], furigana_y))
-                    font[new_furigana_codepoint].transform(matrix)
+                # ルビの高さを計算（今は親文字のすぐ上に）
+                furigana_y = font.ascent
 
-                else:
-                    # ルビの二文字目以降は、文字の位置とサイズを設定して参照を追加
-                    matrix = psMat.compose(psMat.scale(furigana_scale), psMat.translate(list_furigana_x[index], furigana_y))
-                    furigana_codepoint = ord(furigana)
-                    font[new_furigana_codepoint].addReference(font[furigana_codepoint].glyphname , matrix)
+                # ルビの新たな文字を合成し、私用領域に割り当てる
+                for index, furigana in enumerate(list(text_furigana)):
+                    if index == 0:
+                        # ルビの一文字目だけは、コピペして位置とサイズを変更（全ての文字が参照だと、上手くいかないっぽいので）
+                        furigana_codepoint = ord(furigana)
+                        font.selection.select(furigana_codepoint)
+                        font.copy()
 
-            # ルビ文字の幅をゼロに（親文字の後ろにつけるので）
-            font[new_furigana_codepoint].width = 0;
+                        font.selection.select(('more', 'unicode'), new_furigana_codepoint)
+                        font.paste()
 
-            # ルビの指定部分を置換し、出力用の文字列を作成する（一カ所ずつ処理するので、replaceの回数を1に）
-            src_text_line = src_text_line.replace(text_oyamoji_furigana, text_oyamoji + unichr(new_furigana_codepoint), 1)
+                        matrix = psMat.compose(psMat.scale(furigana_scale), psMat.translate(list_furigana_x[0], furigana_y))
+                        font[new_furigana_codepoint].transform(matrix)
 
-            # ルビ文字を割り当てるコードポイントを次へ
-            new_furigana_codepoint += 1
+                    else:
+                        # ルビの二文字目以降は、文字の位置とサイズを設定して参照を追加
+                        matrix = psMat.compose(psMat.scale(furigana_scale), psMat.translate(list_furigana_x[index], furigana_y))
+                        furigana_codepoint = ord(furigana)
+                        font[new_furigana_codepoint].addReference(font[furigana_codepoint].glyphname , matrix)
+
+                # ルビ文字の幅をゼロに（親文字の後ろにつけるので）
+                font[new_furigana_codepoint].width = 0;
+
+                # ルビの指定部分を置換し、出力用の文字列を作成する（一カ所ずつ処理するので、replaceの回数を1に）
+                src_text_line = src_text_line.replace(text_oyamoji_furigana, text_oyamoji + unichr(new_furigana_codepoint), 1)
+
+                # ルビ文字を割り当てるコードポイントを次へ
+                new_furigana_codepoint += 1
 
         # ルビ文字を置き換えたテキストを出力
         file_dst_text.write(src_text_line)
