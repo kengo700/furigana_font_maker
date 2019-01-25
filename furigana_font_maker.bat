@@ -5,5 +5,5 @@ set "PYTHONPATH=%FF%lib\python2.7"
 set "PATH=%FF%;%FF%\bin;%PATH%"
 set FF_PATH_ADDED=TRUE
 set CURRENTPATH=%~dp0
-ffpython %CURRENTPATH%\furigana_font_maker.py dummy_text.txt C:\Windows\Fonts\times.ttf C:\Temp\ffm\times_test.ttf
+ffpython %CURRENTPATH%\furigana_font_maker.py dummy_text.txt C:\Windows\Fonts\yumin.ttf C:\Temp\ffm\yumin_test.ttf
 pause
