@@ -4,9 +4,28 @@
 import sys
 import fontforge
 import psMat
+import re
+import codecs
 
 if __name__ == '__main__':
+
+
+    pattern = u"｜.*?》"
+    text = u"テスト｜親文字《ふりがな》テストテスト"
+    repatter = re.compile(pattern)
+    result = re.search(repatter,text)
     
+    f_test = codecs.open("test.txt", 'w', "utf_8")
+
+    if result:
+        print result.span()
+        f_test.write(result.group())
+
+    f_test.close()
+
+    exit()
+
+
     src_text = sys.argv[1]
     src_font = sys.argv[2]
     dst_font = sys.argv[3]
