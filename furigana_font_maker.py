@@ -60,7 +60,10 @@ def main():
     symbol_furigana_right = u"》"
 
     # テキスト中に出てきたルビ指定を保存する辞書（同じルビ指定が出たときに使い回せるように）
-    dictionary_furigana = {}
+    dictionary_oyamoji_furigana = {}
+
+    # テキスト中に出てきたルビ指定を保存する辞書（親文字の幅とルビを記録しておき、例えば傍点などを使い回せるように）
+    dictionary_width_furigana = {}
     
     # 正規表現の準備
     re_pattern_oyamoji_furigana = symbol_oyamoji_left  + u".*?" + symbol_furigana_right
@@ -74,6 +77,11 @@ def main():
     font = fontforge.open(src_font)
     file_src_text = codecs.open(src_text,'r', "utf_8")
     file_dst_text = codecs.open(dst_text,'w', "utf_8")
+    
+    # フォント名を修正
+    font.fontname = font.fontname + "_furigana"
+    font.fullname = font.fullname + " Furigana"
+    font.familyname = font.familyname + " Furigana"
 
     # ファイルからテキストを一行ずつ読み込み
     for src_text_line in file_src_text:
@@ -100,26 +108,34 @@ def main():
                 #   本来は何らかのエラーメッセージを出すべきなので、要修正
                 break
 
-            # このルビ指定が既出であれば、それを差し込む
-            if text_oyamoji_furigana in dictionary_furigana:
+            # 親文字全体の幅を計算（カーニングなどはないものとする）
+            oyamoji_width = calc_text_width(text_oyamoji, font)
+
+            # ルビ全体の幅を計算（カーニングなどはないものとする）
+            furigana_width = calc_text_width(text_furigana, font) * furigana_scale
+
+            # 親文字の幅とルビの文字を組み合わせた変数を作成
+            width_and_furigana = str(furigana_width) + text_furigana
+
+            # このルビ指定が既出であれば、それを使い回す
+            if text_oyamoji_furigana in dictionary_oyamoji_furigana:
 
                 # ルビの指定部分を置換し、出力用の文字列を作成する（一カ所ずつ処理するので、replaceの回数を1に）
-                temp_furigana_codepoint = dictionary_furigana[text_oyamoji_furigana]
+                temp_furigana_codepoint = dictionary_oyamoji_furigana[text_oyamoji_furigana]
+                src_text_line = src_text_line.replace(text_oyamoji_furigana, text_oyamoji + unichr(temp_furigana_codepoint), 1)
+
+            # 親文字の幅とルビが既出のものがあれば、それを使い回す
+            elif width_and_furigana in dictionary_width_furigana:
+
+                # ルビの指定部分を置換し、出力用の文字列を作成する（一カ所ずつ処理するので、replaceの回数を1に）
+                temp_furigana_codepoint = dictionary_width_furigana[width_and_furigana]
                 src_text_line = src_text_line.replace(text_oyamoji_furigana, text_oyamoji + unichr(temp_furigana_codepoint), 1)
 
             # このルビ指定が初めて出てきたものであれば、新たにルビ文字を作成する
             else:
-                dictionary_furigana[text_oyamoji_furigana] = new_furigana_codepoint
-
-                font.fontname = font.fontname + "_furigana"
-                font.fullname = font.fullname + " Furigana"
-                font.familyname = font.familyname + " Furigana"
-
-                # 親文字全体の幅を計算（カーニングなどはないものとする）
-                oyamoji_width = calc_text_width(text_oyamoji, font)
-
-                # ルビ全体の幅を計算（カーニングなどはないものとする）
-                furigana_width = calc_text_width(text_furigana, font) * furigana_scale
+                # 辞書に登録
+                dictionary_oyamoji_furigana[text_oyamoji_furigana] = new_furigana_codepoint
+                dictionary_width_furigana[width_and_furigana] = new_furigana_codepoint
 
                 # ルビの各文字の位置を計算
                 list_furigana_x = calc_furigana_x(text_furigana, oyamoji_width, furigana_width, furigana_scale, font)
