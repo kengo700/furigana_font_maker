@@ -10,6 +10,8 @@
 
 ![コンセプト図](https://github.com/kengo700/furigana_font_maker/blob/images/ffm_concept.jpg)
 
+※ 生成したルビ文字は、Unicodeの[私用領域][1]に割り当てています。  
+※ フォントの改変は、[FontForge][2]のPythonモジュールを使用しています。
 
 ## 活用例
 
