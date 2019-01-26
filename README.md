@@ -70,7 +70,7 @@ FontForgeのインストール先をデフォルトから変えている場合�
 # 参考文献
 
 * アイデア
-    * 恐らくゲーム翻訳家の武藤陽生さんが考案者。フォントに手動でルビを埋め込み、「The Vanishing of Ethan Carter」に実装されている
+    * 恐らく考案者はゲーム翻訳家の武藤陽生さん。フォントに手動でルビを埋め込み、「The Vanishing of Ethan Carter」に実装されている
         * http://gametranslation.blog.fc2.com/blog-entry-29.html
         * https://twitter.com/Minstrel_Bird/status/995850877972889602
     * 私のアイデアメモ
