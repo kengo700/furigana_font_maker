@@ -21,9 +21,6 @@
 ゲームの固有名詞の原文を表示することで、「日本語化されると英語Wikiを検索できない」問題を解決します。
 
 ![DOS2英語ルビ](https://github.com/kengo700/furigana_font_maker/blob/images/ffm_test_dos2_2.jpg)
-<div style="text-align: right;">
-『Divinity: Original Sin 2 - Definitive Edition』より
-</div>
 
 # 環境
 
