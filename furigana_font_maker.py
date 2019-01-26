@@ -49,8 +49,17 @@ def main():
     dst_text = sys.argv[3]
     dst_font = sys.argv[4]
 
+    # ルビ文字のサイズ
     furigana_scale = 0.5
-    ascent_scale = 1.6
+
+    # 生成後のフォントのサイズ
+    ascent_scale = 1.0
+
+    # ルビの高さ（フォントの上面が基準）
+    furigana_height = -100
+
+    # 全ての文字の高さの調整量
+    all_glyph_height = -200
 
     new_furigana_codepoint = 0xE000
 
@@ -82,6 +91,11 @@ def main():
     font.fontname = font.fontname + "_furigana"
     font.fullname = font.fullname + " Furigana"
     font.familyname = font.familyname + " Furigana"
+
+    # 全ての文字の高さを調整
+    matrix = psMat.translate(0, all_glyph_height)
+    font.selection.all()
+    font.transform(matrix)
 
     # ファイルからテキストを一行ずつ読み込み
     for src_text_line in file_src_text:
@@ -140,8 +154,8 @@ def main():
                 # ルビの各文字の位置を計算
                 list_furigana_x = calc_furigana_x(text_furigana, oyamoji_width, furigana_width, furigana_scale, font)
 
-                # ルビの高さを計算（今は親文字のすぐ上に）
-                furigana_y = font.ascent
+                # ルビの高さを計算
+                furigana_y = font.ascent + furigana_height
 
                 # ルビの新たな文字を合成し、私用領域に割り当てる
                 for index, furigana in enumerate(list(text_furigana)):
