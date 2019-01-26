@@ -15,12 +15,12 @@
 
 ゲームの字幕にルビを振ることで、表現の幅が広がります。
 
-![DOS2日本語ルビ](https://github.com/kengo700/furigana_font_maker/images/ffm_test_dos2_1.jpg)
+![DOS2日本語ルビ](https://github.com/kengo700/furigana_font_maker/blob/images/ffm_test_dos2_1.jpg)
 
 
 ゲームの固有名詞の原文を表示することで、「日本語化されると英語Wikiを検索できない」問題を解決します。
 
-![DOS2英語ルビ](https://github.com/kengo700/furigana_font_maker/images/ffm_test_dos2_2.jpg)
+![DOS2英語ルビ](https://github.com/kengo700/furigana_font_maker/blob/images/ffm_test_dos2_2.jpg)
 
 
 # 環境
