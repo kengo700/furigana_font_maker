@@ -48,8 +48,9 @@ def main():
     src_font = sys.argv[2]
     dst_text = sys.argv[3]
     dst_font = sys.argv[4]
-    option   = sys.argv[5]
-    target   = sys.argv[6]
+    scaling  = sys.argv[5]
+    option   = sys.argv[6]
+    target   = sys.argv[7]
 
     #### オプション文字列の解析 ####
 
@@ -57,6 +58,9 @@ def main():
     option_nofurigana   = False
     target_eu4          = False
     target_eu4alt       = False
+
+    if scaling == None:
+        scaling = 0.5
 
     # ルビと親文字を一文字ずつ組み合わせて出力する（親文字が二文字以上の場合は、最初の文字以降を無視する）
     if option == "--one-character":
@@ -71,19 +75,10 @@ def main():
     if target == "--eu4":
         target_eu4 = True
 
-    # Europa Universalis IV日本語化MOD用の設定（別バージョン）
-    if target == "--eu4-alt":
-        target_eu4alt = True
-
     ###########################
 
     # ルビ文字のサイズ
-    if target_eu4:
-        furigana_scale = 0.15
-    elif target_eu4alt:
-        furigana_scale = 0.2
-    else:
-        furigana_scale = 0.5
+    furigana_scale = float(scaling)
 
     # 生成後のフォントのサイズ
     ascent_scale = 1.0
@@ -98,7 +93,7 @@ def main():
         all_glyph_height = -200
 
     # EU4SpecialEscapeとの干渉を避ける
-    if (target_eu4 or target_eu4alt):
+    if target_eu4:
         new_furigana_codepoint = 0xF000
     else:
         new_furigana_codepoint = 0xE000
@@ -201,8 +196,8 @@ def main():
                 # ルビの高さを計算
                 furigana_y = font.ascent + furigana_height
 
-                # ルビが不要の場合は親文字をコピペし、私用領域に割り当てる
-                if option_nofurigana:
+                if option_onechar:
+                    # 親文字をコピペし、私用領域に割り当てる
                     for index, oyamoji in enumerate(list(text_oyamoji)):
                         if index == 0:
                             oyamoji_codepoint = ord(oyamoji)
@@ -218,6 +213,14 @@ def main():
                         else:
                             # 親文字の二文字目以降は読み捨てる
                             break
+
+                    if option_nofurigana != True:
+                        # 親文字にルビを合成し、一文字にする
+                        for index, furigana in enumerate(list(text_furigana)):
+                            matrix = psMat.compose(psMat.scale(furigana_scale), psMat.translate(oyamoji_width + list_furigana_x[index], furigana_y))
+                            furigana_codepoint = ord(furigana)
+                            font[new_furigana_codepoint].addReference(font[furigana_codepoint].glyphname , matrix)
+
                 else:
                     # ルビの新たな文字を合成し、私用領域に割り当てる
                     for index, furigana in enumerate(list(text_furigana)):
@@ -238,18 +241,6 @@ def main():
                             matrix = psMat.compose(psMat.scale(furigana_scale), psMat.translate(list_furigana_x[index], furigana_y))
                             furigana_codepoint = ord(furigana)
                             font[new_furigana_codepoint].addReference(font[furigana_codepoint].glyphname , matrix)
-
-                # ルビに親文字を加えて一文字にする
-                if (option_onechar and option_nofurigana != True):
-                    for index, oyamoji in enumerate(list(text_oyamoji)):
-                        if index == 0:
-                            # 親文字の一文字目だけは、文字の位置とサイズを設定して参照を追加
-                            matrix = psMat.compose(psMat.scale(1.0), psMat.translate(-oyamoji_width, 0.0))
-                            oyamoji_codepoint = ord(oyamoji)
-                            font[new_furigana_codepoint].addReference(font[oyamoji_codepoint].glyphname , matrix)
-                        else:
-                            # 親文字の二文字目以降は読み捨てる
-                            break
 
                 # ルビ文字の幅をゼロに（親文字の後ろにつけるので）
                 if (option_onechar != True):
