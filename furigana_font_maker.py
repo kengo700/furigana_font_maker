@@ -57,7 +57,6 @@ def main():
     option_onechar      = False
     option_nofurigana   = False
     target_eu4          = False
-    target_eu4alt       = False
 
     if scaling == None:
         scaling = 0.5
