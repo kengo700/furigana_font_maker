@@ -6,11 +6,11 @@
 
 ## コンセプト
 
-ルビを指定したテキストとオリジナルのフォントを読み込み、ルビ文字を埋め込んだフォントを自動生成します。この文字をテキストに差し込むことで、ゲーム内でルビを表示します。
+ルビを指定したテキストとオリジナルのフォントを読み込み、ルビを埋め込んだフォントを自動生成します。この文字をテキストに差し込むことで、ゲーム内でルビを表示します。
 
 ![コンセプト図](https://github.com/kengo700/furigana_font_maker/blob/images/ffm_concept.jpg)
 
-※ 生成したルビ文字は、Unicodeの[私用領域][1]に割り当てています。  
+※ 生成した文字は、Unicodeの[私用領域][1]に割り当てています。  
 ※ フォントの改変は、[FontForge][2]のPythonモジュールを使用しています。
 
 ## 活用例
@@ -49,24 +49,26 @@
 
 ## ルビ用フォント＆テキストの生成
 
-ダウンロードした「furigana_font_maker」フォルダ内の「furigana_font_maker.bat」をメモ帳で開き、下記の部分を書き換えて保存
+ダウンロードした「furigana_font_maker」フォルダ内の「config.ini」ファイルをメモ帳で開き、下記の部分を書き換えてUTF-8Nで保存
 
-    set SRC_TEXT=読み込みたいテキストのファイル名
-    set SRC_FONT=読み込みたいフォントのファイル名
-    set DST_TEXT=作成するテキストのファイル名
-    set DST_FONT=作成するフォントのファイル名
+    src_text = 読み込みたいテキストのファイル名
+    src_font = 読み込みたいフォントのファイル名
+    dst_text = 作成するテキストのファイル名
+    dst_font = 作成するフォントのファイル名
 
-FontForgeのインストール先をデフォルトから変えている場合は、下記も修正
+FontForgeのインストール先をデフォルトから変えている場合は、「furigana_font_maker.bat」ファイルをメモ帳で開き、下記の部分を修正して保存
 
     set FF=C:\Program Files (x86)\FontForgeBuilds
 
-修正した「furigana_font_maker.bat」をダブルクリックし、ルビ用フォント＆テキストの生成処理を実行する
+「furigana_font_maker.bat」をダブルクリックし、ルビ用フォント＆テキストの生成処理を実行する
 
 ## 生成したフォント＆テキストの確認
 
 生成したフォントをFontForgeで開き、「表示」メニューの「移動」から「u+e000」へ移動すると、ルビ文字が生成されているはず
 
-生成したテキストをメモ帳などで開くと、親文字の後ろに記号が表示されているはず（現在のフォントによって表示は異なる）
+生成したテキストをメモ帳などで開くと、ルビを指定した親文字部分が記号に置き換わっているはず（現在のフォントによって表示は異なる）
+
+ゲーム内で表示した文字が見切れている場合などは、「config.ini」ファイルの設定を変更する
 　
 
 # 参考文献
@@ -82,7 +84,7 @@ FontForgeのインストール先をデフォルトから変えている場合�
     * [Writing python scripts to change fonts in FontForge](https://fontforge.github.io/en-US/documentation/scripting/python/)
     * [Writing python scripts to change fonts in FontForge](https://fontforge.github.io/python.html)
     * [Writing python scripts to change fonts in FontForge](http://dmtr.org/ff.php)
-    * [FontForge の Python bindings を使えるようにする - にせねこメモ](chrome://bookmarks/?id=13202#1)
+    * [FontForge の Python bindings を使えるようにする - にせねこメモ](https://nixeneko.hatenablog.com/entry/2015/05/21/002602)
     * [amiri/tools at master · alif-type/amiri](https://github.com/alif-type/amiri/tree/master/tools)
     * [Generate Script fo Koruri/VlKoruri.](https://gist.github.com/lindwurm/b24657c335bb11a520c4/9461c1690188ddd2b6d721467653e6e0072689b8)
     * [第332回　Webフォントをつくろう：Ubuntu Weekly Recipe｜gihyo.jp … 技術評論社](http://gihyo.jp/admin/serial/01/ubuntu-recipe/0332?page=2)
