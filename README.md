@@ -15,14 +15,18 @@
 
 ## 活用例
 
-ゲームの字幕にルビを振ることで、表現の幅が広がります。
+ゲームの字幕にルビを振ることで、表現の幅が広がります（[Divinity: Original Sin 2](https://store.steampowered.com/app/435150/Divinity_Original_Sin_2__Definitive_Edition/)での表示テストより）。
 
 ![DOS2日本語ルビ](https://github.com/kengo700/furigana_font_maker/blob/images/ffm_test_dos2_1.jpg)
 
 
-ゲームの固有名詞の原文を表示することで、「日本語化されると英語Wikiを検索できない」問題を解決します。
+ゲームの固有名詞の原文を表示することで、「日本語化されると英語Wikiを検索できない」問題を解決します（同上）。
 
 ![DOS2英語ルビ](https://github.com/kengo700/furigana_font_maker/blob/images/ffm_test_dos2_2.jpg)
+
+読みが難しい国名にルビを振ることができます（[Europa Universalis IV](https://store.steampowered.com/app/236850/Europa_Universalis_IV/)の[振り仮名MOD](https://steamcommunity.com/sharedfiles/filedetails/?id=1639421925)より）。
+
+![EU4ルビ](https://github.com/kengo700/furigana_font_maker/blob/images/ffm_test_eu4.jpg)
 
 # 環境
 
